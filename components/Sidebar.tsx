@@ -61,8 +61,10 @@ export function Sidebar({
   };
 
   return (
-    <div className={`flex h-full flex-col bg-zinc-950 text-zinc-200 select-none transition-all duration-300 ease-in-out shrink-0 ${
-      isOpen ? 'w-64 border-r border-zinc-200 dark:border-zinc-900' : 'w-0 overflow-hidden border-r-0'
+    <div className={`fixed inset-y-0 left-0 z-40 md:relative flex h-full flex-col bg-zinc-950 text-zinc-200 select-none transition-all duration-300 ease-in-out shrink-0 ${
+      isOpen 
+        ? 'w-64 border-r border-zinc-250 dark:border-zinc-900 translate-x-0' 
+        : 'w-0 overflow-hidden border-r-0 -translate-x-full md:translate-x-0'
     }`}>
       {/* Sidebar Header */}
       <div className="flex items-center justify-start px-4 py-5 border-b border-zinc-900/60 min-w-[256px]">
@@ -87,7 +89,7 @@ export function Sidebar({
           Recent Searches
         </h3>
         {sessions.length === 0 ? (
-          <div className="px-3 py-4 text-xs text-zinc-650 italic">No search history</div>
+          <div className="px-3 py-4 text-xs text-zinc-600 italic">No search history</div>
         ) : (
           sessions.map((session) => {
             const isActive = session.id === activeSessionId;
@@ -125,7 +127,7 @@ export function Sidebar({
         <div className="flex items-center justify-between px-1 gap-2">
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
+            className="flex items-center justify-center p-2 rounded-xl text-zinc-450 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
             title="Toggle theme"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}

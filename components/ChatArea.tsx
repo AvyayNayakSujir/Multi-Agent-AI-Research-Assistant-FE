@@ -90,7 +90,7 @@ export function ChatArea({
       </div>
 
       {/* Messages Stream */}
-      <div className="flex-1 overflow-y-auto px-6 py-6 scrollbar-thin z-10">
+      <div className="flex-1 overflow-y-auto px-4 py-4 md:px-6 md:py-6 scrollbar-thin z-10">
         {!activeSession || activeSession.messages.length === 0 ? (
           /* Landing State */
           <div className="flex h-full flex-col items-center justify-center text-center max-w-xl mx-auto animate-fadeIn">

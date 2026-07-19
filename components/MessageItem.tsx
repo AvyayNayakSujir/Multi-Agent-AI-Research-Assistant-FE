@@ -84,7 +84,22 @@ export function MessageItem({ message }: MessageItemProps) {
             ref={markdownRef}
             className="markdown-body text-sm leading-relaxed text-zinc-800 dark:text-zinc-200 prose-headings:font-semibold prose-headings:text-zinc-950 dark:prose-headings:text-zinc-50 prose-a:text-indigo-600 dark:prose-a:text-indigo-400 prose-table:border-collapse prose-th:bg-zinc-50 dark:prose-th:bg-zinc-900/50"
           >
-            <ReactMarkdown remarkPlugins={[remarkGfm]}>
+            <ReactMarkdown 
+              remarkPlugins={[remarkGfm]}
+              components={{
+                table: ({ node, ...props }) => (
+                  <div className="overflow-x-auto w-full my-4 border border-zinc-200 dark:border-zinc-800 rounded-xl">
+                    <table {...props} className="min-w-full divide-y divide-zinc-200 dark:divide-zinc-800" />
+                  </div>
+                ),
+                th: ({ node, ...props }) => (
+                  <th {...props} className="px-4 py-2 bg-zinc-50 dark:bg-zinc-900/50 text-left text-xs font-semibold text-zinc-950 dark:text-zinc-50 border-b border-zinc-200 dark:border-zinc-800" />
+                ),
+                td: ({ node, ...props }) => (
+                  <td {...props} className="px-4 py-2 text-xs text-zinc-850 dark:text-zinc-200 border-b border-zinc-100 dark:border-zinc-800/40" />
+                )
+              }}
+            >
               {message.content}
             </ReactMarkdown>
           </div>

@@ -11,6 +11,13 @@ export default function Home() {
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
   const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
+  // Set default sidebar visibility based on device width on client mount
+  useEffect(() => {
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
+  }, []);
+
   const {
     isLoading,
     statusSteps,
@@ -45,6 +52,9 @@ export default function Home() {
     // Return to the clean landing workspace (deselect current active session).
     // A session is only instantiated in history after a prompt is sent.
     setActiveSessionId(null);
+    if (typeof window !== 'undefined' && window.innerWidth < 768) {
+      setIsSidebarOpen(false);
+    }
   };
 
   const handleDeleteSession = (id: string) => {
@@ -136,16 +146,30 @@ export default function Home() {
   const activeSession = sessions.find((s) => s.id === activeSessionId) || null;
 
   return (
-    <div className="flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-black font-sans">
+    <div className="relative flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-black font-sans">
+      {/* Mobile Backdrop Overlay */}
+      {isSidebarOpen && (
+        <div 
+          className="fixed inset-0 bg-black/40 backdrop-blur-sm z-30 md:hidden"
+          onClick={() => setIsSidebarOpen(false)}
+        />
+      )}
+
       <Sidebar
         sessions={sessions}
         activeSessionId={activeSessionId}
-        onSelectSession={setActiveSessionId}
+        onSelectSession={(id) => {
+          setActiveSessionId(id);
+          if (typeof window !== 'undefined' && window.innerWidth < 768) {
+            setIsSidebarOpen(false);
+          }
+        }}
         onCreateSession={handleCreateSession}
         onDeleteSession={handleDeleteSession}
         onClearAll={handleClearAll}
         isOpen={isSidebarOpen}
       />
+      
       <ChatArea
         activeSession={activeSession}
         onSendMessage={handleSendMessage}
