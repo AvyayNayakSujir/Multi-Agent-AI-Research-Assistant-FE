@@ -41,14 +41,9 @@ export default function Home() {
   };
 
   const handleCreateSession = () => {
-    const newSession: ChatSession = {
-      id: crypto.randomUUID(),
-      title: 'New Research',
-      messages: [],
-      createdAt: Date.now(),
-    };
-    saveSessions([newSession, ...sessions]);
-    setActiveSessionId(newSession.id);
+    // Return to the clean landing workspace (deselect current active session).
+    // A session is only instantiated in history after a prompt is sent.
+    setActiveSessionId(null);
   };
 
   const handleDeleteSession = (id: string) => {
@@ -70,11 +65,11 @@ export default function Home() {
     let currentSessionId = activeSessionId;
     let currentSessions = [...sessions];
 
-    // Create a session if none exists
+    // 1. Create a session on-the-fly if none exists
     if (!currentSessionId) {
       const newSession: ChatSession = {
         id: crypto.randomUUID(),
-        title: 'New Research',
+        title: query.length > 30 ? `${query.slice(0, 30)}...` : query,
         messages: [],
         createdAt: Date.now(),
       };
@@ -88,7 +83,7 @@ export default function Home() {
 
     const session = currentSessions[activeSessionIndex];
 
-    // 1. Add User Prompt Message
+    // 2. Add User Prompt Message
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: 'user',
@@ -96,7 +91,6 @@ export default function Home() {
       timestamp: Date.now(),
     };
 
-    // Auto-update session title if it is still default
     const updatedTitle = session.title === 'New Research'
       ? (query.length > 30 ? `${query.slice(0, 30)}...` : query)
       : session.title;
@@ -107,7 +101,7 @@ export default function Home() {
       messages: [...session.messages, userMessage],
     };
     
-    // Optimistically update list in state to show user message instantly
+    // Save to trigger immediate render of user message
     saveSessions(currentSessions);
 
     // 2. Stream Response from backend
