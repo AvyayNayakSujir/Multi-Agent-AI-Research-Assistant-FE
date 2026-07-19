@@ -69,20 +69,20 @@ export function ChatArea({
 
       {/* Chat Area Header */}
       <div className="flex h-14 items-center justify-between border-b border-zinc-100 bg-white/80 px-4 backdrop-blur-md dark:border-zinc-900/60 dark:bg-black/80 z-10 select-none">
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-2 min-w-0 max-w-[calc(100vw-80px)]">
           <button
             onClick={onToggleSidebar}
-            className="p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white transition-all cursor-pointer"
+            className="p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white transition-all cursor-pointer shrink-0"
             title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
           >
             {isSidebarOpen ? <PanelLeftClose className="h-4.5 w-4.5" /> : <PanelLeft className="h-4.5 w-4.5" />}
           </button>
           
-          <div className="flex flex-col">
-            <span className="text-sm font-semibold text-zinc-950 dark:text-zinc-50 leading-tight">
+          <div className="flex flex-col min-w-0 max-w-[180px] sm:max-w-[300px] md:max-w-[500px]">
+            <span className="text-sm font-semibold text-zinc-950 dark:text-zinc-50 leading-tight truncate">
               {activeSession ? activeSession.title : 'Workspace'}
             </span>
-            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-tight mt-0.5">
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-tight mt-0.5 truncate">
               {isGenerating ? 'Running research agent...' : 'Idle'}
             </span>
           </div>

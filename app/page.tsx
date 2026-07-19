@@ -146,7 +146,7 @@ export default function Home() {
   const activeSession = sessions.find((s) => s.id === activeSessionId) || null;
 
   return (
-    <div className="relative flex h-screen w-screen overflow-hidden bg-zinc-50 dark:bg-black font-sans">
+    <div className="relative flex h-dvh w-screen overflow-hidden bg-zinc-50 dark:bg-black font-sans">
       {/* Mobile Backdrop Overlay */}
       {isSidebarOpen && (
         <div 

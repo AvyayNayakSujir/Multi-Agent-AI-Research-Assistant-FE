@@ -63,8 +63,8 @@ export function Sidebar({
   return (
     <div className={`fixed inset-y-0 left-0 z-40 md:relative flex h-full flex-col bg-zinc-950 text-zinc-200 select-none transition-all duration-300 ease-in-out shrink-0 ${
       isOpen 
-        ? 'w-64 border-r border-zinc-250 dark:border-zinc-900 translate-x-0' 
-        : 'w-0 overflow-hidden border-r-0 -translate-x-full md:translate-x-0'
+        ? 'w-64 border-r border-zinc-250 dark:border-zinc-900 translate-x-0 pointer-events-auto' 
+        : 'w-0 overflow-hidden border-r-0 -translate-x-full md:translate-x-0 md:pointer-events-auto pointer-events-none'
     }`}>
       {/* Sidebar Header */}
       <div className="flex items-center justify-start px-4 py-5 border-b border-zinc-900/60 min-w-[256px]">
