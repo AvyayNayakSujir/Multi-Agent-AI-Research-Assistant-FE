@@ -55,15 +55,7 @@ The project maintains a modular, decoupled layout:
 ## Getting Started
 
 ### 1. Configure Environment Variables
-Create a `.env` file in the root directory:
-
-```env
-# URL of your deployed Railway research backend
-MARAS_EXT_BACKEND=http://maras.up.railway.app
-
-# Authorization API Key for Railway backend headers
-API_KEY=dev-api-key
-```
+Create a `.env` file in the root directory using the `.env.example` file
 
 ### 2. Run the Development Server
 Install dependencies and run the client:
