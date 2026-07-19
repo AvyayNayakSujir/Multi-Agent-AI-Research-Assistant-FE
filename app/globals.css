@@ -2,7 +2,7 @@
 
 :root {
   --background: #ffffff;
-  --foreground: #171717;
+  --foreground: #09090b;
 }
 
 @theme inline {
@@ -14,13 +14,215 @@
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #000000;
+    --foreground: #fafafa;
   }
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow: hidden;
+}
+
+/* Custom Scrollbar Styles */
+.scrollbar-thin::-webkit-scrollbar {
+  width: 5px;
+  height: 5px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb {
+  background: rgba(100, 116, 139, 0.2);
+  border-radius: 9999px;
+}
+
+.scrollbar-thin::-webkit-scrollbar-thumb:hover {
+  background: rgba(100, 116, 139, 0.4);
+}
+
+/* Micro-animations */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.animate-fadeIn {
+  animation: fadeIn 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.animate-scaleIn {
+  animation: scaleIn 0.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+/* Markdown typography styling overrides to fit deep research client aesthetics */
+.markdown-body h1,
+.markdown-body h2,
+.markdown-body h3,
+.markdown-body h4 {
+  color: var(--foreground);
+  font-weight: 600;
+  margin-top: 1.5em;
+  margin-bottom: 0.5em;
+  line-height: 1.25;
+}
+
+.markdown-body h1 {
+  font-size: 1.5em;
+  border-bottom: 1px solid rgba(228, 228, 231, 0.6);
+  padding-bottom: 0.3em;
+}
+
+.dark .markdown-body h1 {
+  border-bottom-color: rgba(39, 39, 42, 0.6);
+}
+
+.markdown-body h2 {
+  font-size: 1.25em;
+}
+
+.markdown-body h3 {
+  font-size: 1.1em;
+}
+
+.markdown-body p {
+  margin-top: 0;
+  margin-bottom: 1em;
+  line-height: 1.6;
+}
+
+.markdown-body table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1.2em;
+  margin-bottom: 1.2em;
+  font-size: 0.9em;
+}
+
+.markdown-body th,
+.markdown-body td {
+  border: 1px solid #e4e4e7;
+  padding: 8px 12px;
+  text-align: left;
+}
+
+.dark .markdown-body th,
+.dark .markdown-body td {
+  border-color: #27272a;
+}
+
+.markdown-body th {
+  background-color: #f4f4f5;
+  font-weight: 600;
+}
+
+.dark .markdown-body th {
+  background-color: #18181b;
+}
+
+.markdown-body blockquote {
+  border-left: 4px solid #cbd5e1;
+  padding-left: 16px;
+  color: #64748b;
+  margin: 1.2em 0;
+  font-style: italic;
+}
+
+.dark .markdown-body blockquote {
+  border-left-color: #4b5563;
+  color: #9ca3af;
+}
+
+.markdown-body pre {
+  background-color: #f4f4f5;
+  padding: 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  margin-bottom: 1em;
+  border: 1px solid #e4e4e7;
+}
+
+.dark .markdown-body pre {
+  background-color: #09090b;
+  border-color: #27272a;
+}
+
+.markdown-body code {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+  font-size: 0.85em;
+  background-color: #f4f4f5;
+  padding: 2px 4px;
+  border-radius: 4px;
+  color: #e11d48;
+}
+
+.dark .markdown-body code {
+  background-color: #18181b;
+  color: #fda4af;
+}
+
+.markdown-body pre code {
+  background-color: transparent;
+  padding: 0;
+  border-radius: 0;
+  color: inherit;
+}
+
+.markdown-body ul,
+.markdown-body ol {
+  margin-top: 0;
+  margin-bottom: 1em;
+  padding-left: 1.5em;
+}
+
+.markdown-body ul {
+  list-style-type: disc;
+}
+
+.markdown-body ol {
+  list-style-type: decimal;
+}
+
+.markdown-body li {
+  margin-bottom: 0.25em;
+  line-height: 1.6;
+}
+
+.markdown-body a {
+  color: #4f46e5;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.markdown-body a:hover {
+  color: #3730a3;
+}
+
+.dark .markdown-body a {
+  color: #818cf8;
+}
+
+.dark .markdown-body a:hover {
+  color: #a5b4fc;
 }
