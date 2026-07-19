@@ -20,6 +20,7 @@ export function Sidebar({
   onClearAll,
 }: SidebarProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
+  const [confirmClear, setConfirmClear] = useState(false);
 
   // Initialize theme
   useEffect(() => {
@@ -42,6 +43,18 @@ export function Sidebar({
     } else {
       document.documentElement.classList.remove('dark');
       localStorage.setItem('theme', 'light');
+    }
+  };
+
+  const handleClearClick = () => {
+    if (confirmClear) {
+      onClearAll();
+      setConfirmClear(false);
+    } else {
+      setConfirmClear(true);
+      // Auto-reset after 3 seconds if not clicked again
+      const timer = setTimeout(() => setConfirmClear(false), 3000);
+      return () => clearTimeout(timer);
     }
   };
 
@@ -70,7 +83,7 @@ export function Sidebar({
           Recent Searches
         </h3>
         {sessions.length === 0 ? (
-          <div className="px-3 py-4 text-xs text-zinc-650 italic">No search history</div>
+          <div className="px-3 py-4 text-xs text-zinc-600 italic">No search history</div>
         ) : (
           sessions.map((session) => {
             const isActive = session.id === activeSessionId;
@@ -88,11 +101,11 @@ export function Sidebar({
                 <button
                   onClick={(e) => {
                     e.stopPropagation();
-                    if (confirm('Delete this search session?')) {
-                      onDeleteSession(session.id);
-                    }
+                    onDeleteSession(session.id);
                   }}
-                  className="opacity-0 group-hover:opacity-100 hover:text-rose-400 text-zinc-500 p-0.5 rounded transition-all cursor-pointer"
+                  className={`hover:text-rose-450 text-zinc-500 p-0.5 rounded transition-all cursor-pointer ${
+                    isActive ? 'opacity-100' : 'opacity-0 group-hover:opacity-100'
+                  }`}
                   title="Delete session"
                 >
                   <Trash2 className="h-3.5 w-3.5" />
@@ -105,10 +118,10 @@ export function Sidebar({
 
       {/* Footer controls */}
       <div className="border-t border-zinc-900 p-3 bg-zinc-950/80 backdrop-blur-md">
-        <div className="flex items-center justify-between px-1">
+        <div className="flex items-center justify-between px-1 gap-2">
           <button
             onClick={toggleTheme}
-            className="flex items-center justify-center p-2 rounded-xl text-zinc-450 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
+            className="flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
             title="Toggle theme"
           >
             {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
@@ -116,15 +129,16 @@ export function Sidebar({
 
           {sessions.length > 0 && (
             <button
-              onClick={() => {
-                if (confirm('Are you sure you want to clear all research history? This action cannot be undone.')) {
-                  onClearAll();
-                }
-              }}
-              className="flex items-center justify-center p-2 rounded-xl text-zinc-500 hover:bg-rose-950/20 hover:text-rose-400 transition-all cursor-pointer"
-              title="Clear all history"
+              onClick={handleClearClick}
+              className={`flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-semibold transition-all cursor-pointer ${
+                confirmClear
+                  ? 'bg-rose-600 hover:bg-rose-500 text-white shadow-md shadow-rose-600/20'
+                  : 'text-zinc-500 hover:bg-rose-950/20 hover:text-rose-400'
+              }`}
+              title={confirmClear ? "Click again to confirm clear" : "Clear all history"}
             >
               <Trash2 className="h-4 w-4" />
+              {confirmClear && <span className="animate-fadeIn">Confirm Clear?</span>}
             </button>
           )}
         </div>
