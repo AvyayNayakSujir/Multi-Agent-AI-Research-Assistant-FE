@@ -9,6 +9,7 @@ interface SidebarProps {
   onCreateSession: () => void;
   onDeleteSession: (id: string) => void;
   onClearAll: () => void;
+  isOpen: boolean;
 }
 
 export function Sidebar({
@@ -18,6 +19,7 @@ export function Sidebar({
   onCreateSession,
   onDeleteSession,
   onClearAll,
+  isOpen,
 }: SidebarProps) {
   const [theme, setTheme] = useState<'light' | 'dark'>('dark');
   const [confirmClear, setConfirmClear] = useState(false);
@@ -59,15 +61,17 @@ export function Sidebar({
   };
 
   return (
-    <div className="flex h-full w-64 flex-col border-r border-zinc-200 bg-zinc-950 text-zinc-200 dark:border-zinc-900 select-none">
+    <div className={`flex h-full flex-col bg-zinc-950 text-zinc-200 select-none transition-all duration-300 ease-in-out shrink-0 ${
+      isOpen ? 'w-64 border-r border-zinc-200 dark:border-zinc-900' : 'w-0 overflow-hidden border-r-0'
+    }`}>
       {/* Sidebar Header */}
-      <div className="flex items-center justify-start px-4 py-5 border-b border-zinc-900/60">
+      <div className="flex items-center justify-start px-4 py-5 border-b border-zinc-900/60 min-w-[256px]">
         <Sparkles className="h-4 w-4 mr-2 text-indigo-400" />
         <div className="font-semibold tracking-tight text-white text-base">Multi-Agent Research</div>
       </div>
 
       {/* Action Button */}
-      <div className="px-3 pt-4">
+      <div className="px-3 pt-4 min-w-[256px]">
         <button
           onClick={onCreateSession}
           className="flex w-full items-center justify-center gap-2 rounded-xl bg-zinc-900 border border-zinc-800/80 px-4 py-2.5 text-sm font-semibold text-white shadow-sm hover:bg-zinc-800 hover:border-zinc-700 active:bg-zinc-900 active:border-zinc-800 transition-all duration-200 group cursor-pointer"
@@ -78,12 +82,12 @@ export function Sidebar({
       </div>
 
       {/* Session History List */}
-      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-1 scrollbar-thin">
+      <div className="flex-1 overflow-y-auto px-2 py-4 space-y-1 scrollbar-thin min-w-[256px]">
         <h3 className="px-3 text-[10px] font-bold uppercase tracking-wider text-zinc-500 mb-2">
           Recent Searches
         </h3>
         {sessions.length === 0 ? (
-          <div className="px-3 py-4 text-xs text-zinc-600 italic">No search history</div>
+          <div className="px-3 py-4 text-xs text-zinc-650 italic">No search history</div>
         ) : (
           sessions.map((session) => {
             const isActive = session.id === activeSessionId;
@@ -117,14 +121,14 @@ export function Sidebar({
       </div>
 
       {/* Footer controls */}
-      <div className="border-t border-zinc-900 p-3 bg-zinc-950/80 backdrop-blur-md">
+      <div className="border-t border-zinc-900 p-3 bg-zinc-950/80 backdrop-blur-md min-w-[256px]">
         <div className="flex items-center justify-between px-1 gap-2">
           <button
             onClick={toggleTheme}
             className="flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
             title="Toggle theme"
           >
-            {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
+            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
           </button>
 
           {sessions.length > 0 && (

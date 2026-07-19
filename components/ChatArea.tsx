@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { ChatSession, MessageStatusStep } from '../types';
 import { MessageItem } from './MessageItem';
-import { ArrowUp, StopCircle, CornerDownLeft, Sparkles } from 'lucide-react';
+import { ArrowUp, StopCircle, CornerDownLeft, Sparkles, PanelLeftClose, PanelLeft } from 'lucide-react';
 
 interface ChatAreaProps {
   activeSession: ChatSession | null;
@@ -10,6 +10,8 @@ interface ChatAreaProps {
   isGenerating: boolean;
   currentStreamSteps: MessageStatusStep[];
   currentStreamError: string | null;
+  isSidebarOpen: boolean;
+  onToggleSidebar: () => void;
 }
 
 export function ChatArea({
@@ -19,6 +21,8 @@ export function ChatArea({
   isGenerating,
   currentStreamSteps,
   currentStreamError,
+  isSidebarOpen,
+  onToggleSidebar,
 }: ChatAreaProps) {
   const [prompt, setPrompt] = useState('');
   const textareaRef = useRef<HTMLTextAreaElement>(null);
@@ -64,14 +68,24 @@ export function ChatArea({
       <div className="absolute bottom-0 right-1/4 w-96 h-96 bg-purple-500/10 rounded-full blur-3xl pointer-events-none dark:bg-purple-500/5" />
 
       {/* Chat Area Header */}
-      <div className="flex h-14 items-center justify-between border-b border-zinc-100 bg-white/80 px-6 backdrop-blur-md dark:border-zinc-900/60 dark:bg-black/80 z-10 select-none">
-        <div className="flex flex-col">
-          <span className="text-sm font-semibold text-zinc-950 dark:text-zinc-50">
-            {activeSession ? activeSession.title : 'Workspace'}
-          </span>
-          <span className="text-[10px] text-zinc-400 dark:text-zinc-500">
-            {isGenerating ? 'Running research agent...' : 'Idle'}
-          </span>
+      <div className="flex h-14 items-center justify-between border-b border-zinc-100 bg-white/80 px-4 backdrop-blur-md dark:border-zinc-900/60 dark:bg-black/80 z-10 select-none">
+        <div className="flex items-center gap-2">
+          <button
+            onClick={onToggleSidebar}
+            className="p-2 rounded-xl text-zinc-500 hover:bg-zinc-100 hover:text-zinc-900 dark:text-zinc-400 dark:hover:bg-zinc-900 dark:hover:text-white transition-all cursor-pointer"
+            title={isSidebarOpen ? "Collapse sidebar" : "Expand sidebar"}
+          >
+            {isSidebarOpen ? <PanelLeftClose className="h-4.5 w-4.5" /> : <PanelLeft className="h-4.5 w-4.5" />}
+          </button>
+          
+          <div className="flex flex-col">
+            <span className="text-sm font-semibold text-zinc-950 dark:text-zinc-50 leading-tight">
+              {activeSession ? activeSession.title : 'Workspace'}
+            </span>
+            <span className="text-[10px] text-zinc-400 dark:text-zinc-500 leading-tight mt-0.5">
+              {isGenerating ? 'Running research agent...' : 'Idle'}
+            </span>
+          </div>
         </div>
       </div>
 
@@ -90,38 +104,38 @@ export function ChatArea({
               Enter any query to search, scrape, retrieve, and synthesize comprehensive reports with real-time process monitoring.
             </p>
 
-            <div className="grid grid-cols-1 gap-3 w-full">
-              {suggestions.map((suggestion, idx) => (
+            {/* Suggestions list */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 w-full max-w-lg mb-6">
+              {suggestions.map((suggestion, index) => (
                 <button
-                  key={idx}
-                  onClick={() => {
-                    setPrompt(suggestion);
-                    textareaRef.current?.focus();
-                  }}
-                  className="w-full text-left p-4 rounded-xl border border-zinc-200 bg-zinc-50/50 hover:bg-zinc-50 hover:border-indigo-500 hover:shadow-sm transition-all dark:border-zinc-800 dark:bg-zinc-900/20 dark:hover:border-indigo-450 dark:hover:bg-zinc-900/50 text-sm font-semibold text-zinc-700 dark:text-zinc-300 cursor-pointer"
+                  key={index}
+                  type="button"
+                  onClick={() => onSendMessage(suggestion)}
+                  className="p-4 text-left text-xs bg-zinc-50 hover:bg-zinc-100/80 border border-zinc-200 rounded-2xl dark:bg-zinc-900/25 dark:border-zinc-800 dark:hover:bg-zinc-900/60 dark:hover:border-zinc-700 transition-all cursor-pointer leading-relaxed text-zinc-600 dark:text-zinc-400"
                 >
-                  {suggestion}
+                  <span className="font-semibold text-zinc-800 dark:text-zinc-200 block mb-1">
+                    Suggestion
+                  </span>
+                  "{suggestion}"
                 </button>
               ))}
             </div>
           </div>
         ) : (
-          /* Message Thread */
-          <div className="max-w-3xl mx-auto">
+          /* Chat Stream List */
+          <div className="max-w-3xl mx-auto space-y-6">
             {activeSession.messages.map((message) => (
               <MessageItem key={message.id} message={message} />
             ))}
-
-            {/* Real-time Loading Output */}
+            
+            {/* Active Streaming steps */}
             {isGenerating && (
               <MessageItem
                 message={{
-                  id: 'temp-stream',
+                  id: 'streaming-active',
                   role: 'assistant',
                   content: '',
-                  isLoading: true,
                   statusSteps: currentStreamSteps,
-                  error: currentStreamError || undefined,
                   timestamp: Date.now(),
                 }}
               />
@@ -141,20 +155,19 @@ export function ChatArea({
             value={prompt}
             onChange={(e) => setPrompt(e.target.value)}
             onKeyDown={handleKeyDown}
-            disabled={isGenerating}
-            placeholder="Ask anything..."
-            className="flex-1 resize-none bg-transparent border-0 px-3 py-2 text-sm text-zinc-900 focus:outline-none focus:ring-0 dark:text-zinc-100 placeholder-zinc-500 max-h-[200px] leading-relaxed"
+            placeholder="Search and research anything..."
+            className="flex-1 max-h-48 resize-none bg-transparent py-2.5 pl-3 pr-10 text-sm placeholder-zinc-400 focus:outline-none dark:placeholder-zinc-500 scrollbar-none leading-relaxed text-zinc-900 dark:text-zinc-100"
           />
 
-          <div className="flex items-center gap-1.5 pr-1">
+          <div className="flex items-center gap-1.5 shrink-0 self-center">
             {isGenerating ? (
               <button
                 type="button"
                 onClick={onStopStream}
-                className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-500 hover:bg-rose-600 text-white shadow-sm transition-all duration-200 cursor-pointer"
-                title="Stop generation"
+                className="flex h-8 w-8 items-center justify-center rounded-xl bg-rose-600 text-white hover:bg-rose-500 shadow-md shadow-rose-600/20 transition-all cursor-pointer"
+                title="Stop research stream"
               >
-                <StopCircle className="h-4 w-4 animate-pulse" />
+                <StopCircle className="h-4.5 w-4.5 animate-pulse" />
               </button>
             ) : (
               <button
@@ -162,23 +175,21 @@ export function ChatArea({
                 disabled={!prompt.trim()}
                 className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${
                   prompt.trim()
-                    ? 'bg-[#09090B] text-white shadow-md shadow-indigo-600/20'
+                    ? 'bg-[#09090B] text-white shadow-md shadow-indigo-600/20 dark:bg-[#FAFAFA] dark:text-black'
                     : 'bg-zinc-100 text-zinc-300 dark:bg-zinc-800 dark:text-zinc-700 pointer-events-none'
                 }`}
                 title="Submit search"
               >
-                <ArrowUp className="h-4 w-4" />
+                <ArrowUp className="h-4.5 w-4.5" />
               </button>
             )}
           </div>
+          <div className="absolute right-14 bottom-4 text-[9px] text-zinc-400 dark:text-zinc-650 hidden md:flex items-center gap-1">
+            <span className="border border-zinc-250 dark:border-zinc-800 px-1 rounded">Enter</span>
+            <span>to search</span>
+            <CornerDownLeft className="h-2 w-2 ml-0.5" />
+          </div>
         </form>
-        <div className="max-w-3xl mx-auto mt-2 flex items-center justify-between text-[10px] text-zinc-400 dark:text-zinc-650 px-3">
-          <span>Press Enter to send, Shift+Enter for new line</span>
-          <span className="flex items-center gap-1">
-            <CornerDownLeft className="h-2.5 w-2.5" />
-            Secure SSE Connection
-          </span>
-        </div>
       </div>
     </div>
   );

@@ -9,6 +9,7 @@ import { useSSE } from '../hooks/useSSE';
 export default function Home() {
   const [sessions, setSessions] = useState<ChatSession[]>([]);
   const [activeSessionId, setActiveSessionId] = useState<string | null>(null);
+  const [isSidebarOpen, setIsSidebarOpen] = useState(true);
 
   const {
     isLoading,
@@ -143,6 +144,7 @@ export default function Home() {
         onCreateSession={handleCreateSession}
         onDeleteSession={handleDeleteSession}
         onClearAll={handleClearAll}
+        isOpen={isSidebarOpen}
       />
       <ChatArea
         activeSession={activeSession}
@@ -151,6 +153,8 @@ export default function Home() {
         isGenerating={isLoading}
         currentStreamSteps={statusSteps}
         currentStreamError={error}
+        isSidebarOpen={isSidebarOpen}
+        onToggleSidebar={() => setIsSidebarOpen(!isSidebarOpen)}
       />
     </div>
   );
