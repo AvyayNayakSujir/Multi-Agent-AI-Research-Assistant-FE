@@ -24,8 +24,8 @@ export function Sidebar({
 
   // Initialize theme
   useEffect(() => {
-    const isDark = document.documentElement.classList.contains('dark') || 
-                   (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches);
+    const storedTheme = localStorage.getItem('theme');
+    const isDark = storedTheme ? storedTheme === 'dark' : true;
     setTheme(isDark ? 'dark' : 'light');
     if (isDark) {
       document.documentElement.classList.add('dark');
@@ -124,7 +124,7 @@ export function Sidebar({
             className="flex items-center justify-center p-2 rounded-xl text-zinc-400 hover:bg-zinc-900 hover:text-white transition-all cursor-pointer"
             title="Toggle theme"
           >
-            {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+            {theme === 'dark' ? <Moon className="h-4 w-4" /> : <Sun className="h-4 w-4" />}
           </button>
 
           {sessions.length > 0 && (
