@@ -3,7 +3,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import { ChatMessage } from '../types';
 import { StatusProgress } from './StatusProgress';
-import { copyToClipboard, downloadAsMarkdown, printMarkdown } from '../utils/download';
+import { copyToClipboard, downloadAsMarkdown, downloadPDF } from '../utils/download';
 import { Copy, Check, Download, FileText, Globe } from 'lucide-react';
 
 interface MessageItemProps {
@@ -39,10 +39,8 @@ export function MessageItem({ message }: MessageItemProps) {
   };
 
   const handleDownloadPDF = () => {
-    if (!markdownRef.current) return;
-    const title = `Research Report`;
-    const htmlContent = markdownRef.current.innerHTML;
-    printMarkdown(title, htmlContent);
+    const filename = `research-${message.id}`;
+    downloadPDF(filename, message.content);
   };
 
   const getDomain = (url: string) => {
