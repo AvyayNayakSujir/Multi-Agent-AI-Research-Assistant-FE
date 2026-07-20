@@ -72,7 +72,7 @@ export function MessageItem({ message }: MessageItemProps) {
     <div className="mb-8 border-b border-zinc-100 pb-6 dark:border-zinc-800/40 animate-fadeIn">
       {/* SSE Status logs */}
       {message.statusSteps && message.statusSteps.length > 0 && (
-        <StatusProgress steps={message.statusSteps} isLoading={!!message.isLoading} />
+        <StatusProgress steps={message.statusSteps} isLoading={!!message.isLoading} error={message.error} />
       )}
 
       {/* Main Content Area */}

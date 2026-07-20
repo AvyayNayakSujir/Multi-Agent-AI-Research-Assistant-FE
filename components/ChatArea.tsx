@@ -77,7 +77,7 @@ export function ChatArea({
           >
             {isSidebarOpen ? <PanelLeftClose className="h-4.5 w-4.5" /> : <PanelLeft className="h-4.5 w-4.5" />}
           </button>
-          
+
           <div className="flex flex-col min-w-0 max-w-[180px] sm:max-w-[300px] md:max-w-[500px]">
             <span className="text-sm font-semibold text-zinc-950 dark:text-zinc-50 leading-tight truncate">
               {activeSession ? activeSession.title : 'Workspace'}
@@ -127,7 +127,7 @@ export function ChatArea({
             {activeSession.messages.map((message) => (
               <MessageItem key={message.id} message={message} />
             ))}
-            
+
             {/* Active Streaming steps */}
             {isGenerating && (
               <MessageItem
@@ -136,6 +136,7 @@ export function ChatArea({
                   role: 'assistant',
                   content: '',
                   statusSteps: currentStreamSteps,
+                  isLoading: true,
                   timestamp: Date.now(),
                 }}
               />
@@ -147,7 +148,7 @@ export function ChatArea({
       </div>
 
       {/* Message Input Box */}
-      <div className="border-t border-zinc-100 p-4 bg-white/80 dark:bg-black/80 backdrop-blur-md dark:border-zinc-900/60 z-10 select-none">
+      <div className="border-t border-transparent pb-4 pr-4 pl-4 bg-transparent dark:bg-transparent dark:border-transparent z-10 select-none">
         <form onSubmit={handleSubmit} className="max-w-3xl mx-auto relative flex items-end gap-2 bg-zinc-50 border border-zinc-200 rounded-2xl p-2 dark:bg-zinc-900/30 dark:border-zinc-800 transition-all duration-200">
           <textarea
             ref={textareaRef}
@@ -173,11 +174,10 @@ export function ChatArea({
               <button
                 type="submit"
                 disabled={!prompt.trim()}
-                className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${
-                  prompt.trim()
+                className={`flex h-8 w-8 items-center justify-center rounded-xl transition-all duration-200 cursor-pointer ${prompt.trim()
                     ? 'bg-[#09090B] text-white shadow-md shadow-indigo-600/20 dark:bg-[#FAFAFA] dark:text-black'
                     : 'bg-zinc-100 text-zinc-300 dark:bg-zinc-800 dark:text-zinc-700 pointer-events-none'
-                }`}
+                  }`}
                 title="Submit search"
               >
                 <ArrowUp className="h-4.5 w-4.5" />
