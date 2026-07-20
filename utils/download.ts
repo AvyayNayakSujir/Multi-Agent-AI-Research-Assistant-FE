@@ -55,7 +55,7 @@ function cleanMarkdownSegment(str: string): string {
 /**
  * Generates a clean vector PDF document directly to file download.
  * Prominent 20pt document title, strict word-wrapping inside margin bounds, guaranteed single-space 
- * padding around links, and section heading treatment for 'Sources:'.
+ * padding around links, section heading treatment for 'Sources:', and native vector table grid rendering.
  */
 export function downloadPDF(filename: string, content: string): void {
   const doc = new jsPDF({
@@ -221,6 +221,96 @@ export function downloadPDF(filename: string, content: string): void {
     if (!rawLine.trim()) {
       cursorY += 6;
       continue;
+    }
+
+    // Markdown Table Detection & Vector Renderer
+    if (rawLine.trim().startsWith('|') && rawLine.includes('|')) {
+      const tableLines: string[] = [];
+      while (i < rawLines.length && rawLines[i].trim().startsWith('|')) {
+        tableLines.push(rawLines[i].trim());
+        i++;
+      }
+      i--; // Adjust loop index
+
+      if (tableLines.length > 0) {
+        const parsedRows: string[][] = [];
+        for (const line of tableLines) {
+          // Skip markdown table delimiter rows like | --- | --- |
+          if (/^\|[\s\-:\s|]+\|$/.test(line)) continue;
+          
+          const cells = line
+            .split('|')
+            .map(c => cleanMarkdownSegment(c).trim())
+            .filter((_, idx, arr) => idx > 0 && idx < arr.length - 1);
+
+          if (cells.length > 0) {
+            parsedRows.push(cells);
+          }
+        }
+
+        if (parsedRows.length > 0) {
+          const numCols = Math.max(...parsedRows.map(r => r.length));
+          const colWidth = maxLineWidth / numCols;
+          const cellPadding = 6;
+          const cellTextWidth = colWidth - cellPadding * 2;
+
+          cursorY += 8;
+
+          for (let r = 0; r < parsedRows.length; r++) {
+            const row = parsedRows[r];
+            const isHeader = (r === 0);
+
+            let maxCellLines = 1;
+            const cellWrappedLines: string[][] = [];
+
+            doc.setFont('helvetica', isHeader ? 'bold' : 'normal');
+            doc.setFontSize(isHeader ? 9 : 8.5);
+
+            for (let c = 0; c < numCols; c++) {
+              const cellText = row[c] || '';
+              const wrapped = doc.splitTextToSize(cellText, cellTextWidth);
+              cellWrappedLines.push(wrapped);
+              if (wrapped.length > maxCellLines) {
+                maxCellLines = wrapped.length;
+              }
+            }
+
+            const rowHeight = maxCellLines * 12 + cellPadding * 2;
+            checkPageBreak(rowHeight);
+
+            // Draw cell header/row background fill
+            if (isHeader) {
+              doc.setFillColor(241, 245, 249); // slate-100 header fill
+              doc.rect(margin, cursorY, maxLineWidth, rowHeight, 'F');
+            } else if (r % 2 === 1) {
+              doc.setFillColor(248, 250, 252); // alternate row fill
+              doc.rect(margin, cursorY, maxLineWidth, rowHeight, 'F');
+            }
+
+            // Draw grid borders and render cell text
+            doc.setDrawColor(226, 232, 240); // slate-200 border line
+            doc.setLineWidth(0.75);
+
+            for (let c = 0; c < numCols; c++) {
+              const cellX = margin + c * colWidth;
+              doc.rect(cellX, cursorY, colWidth, rowHeight, 'S');
+
+              const lines = cellWrappedLines[c];
+              doc.setTextColor(isHeader ? 15 : 51, isHeader ? 23 : 65, isHeader ? 42 : 85);
+              
+              for (let lineIdx = 0; lineIdx < lines.length; lineIdx++) {
+                const textY = cursorY + cellPadding + 9 + lineIdx * 12;
+                doc.text(lines[lineIdx], cellX + cellPadding, textY);
+              }
+            }
+
+            cursorY += rowHeight;
+          }
+
+          cursorY += 10;
+          continue;
+        }
+      }
     }
 
     // Detect 'Sources:' or 'Sources Cited:' or 'References:' as a section heading
